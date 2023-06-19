@@ -1,14 +1,16 @@
-let searchCEP = fetch('https://viacep.com.br/ws/01001000/json/')
-    .then(response => response.json())
-    .then(r => {
-        if(r.erro) {
-            throw Error('Esse cep não existe!');
-        } else {
-            console.log(r)
+async function searchAddress(cep) {
+    try {
+        let searchCEP = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        let convertedAddress = await searchCEP.json();
+        if (convertedAddress.erro) {
+            throw Error('CEP não existe!');
         }
-    })
-    .catch(error => console.log(error))
-    .finally(message => console.log('Processamento concluido!'));
+        return convertedAddress;
+    } catch (e) {
+        return e;
+    }
+}
 
-
-console.log(searchCEP)
+let ceps = ['01001000', '01001001'];
+let allCeps = ceps.map(values => searchAddress(values))
+Promise.all(allCeps).then(response => console.log(response))
